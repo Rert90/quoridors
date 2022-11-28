@@ -1,0 +1,67 @@
+#include <iostream>
+#include <winbgim.h>
+#include <graphics.h>
+#include <cmath>
+#include <stdio.h>
+#include <windows.h>
+#include <fstream>
+#include <conio.h>
+#include <cstring>
+#include <cstdlib>
+
+using namespace std;
+
+int i,j;
+char m[17][17];
+int zid1=10;
+int zid2=10;
+int ordine=0;
+int finish=0;
+
+void creareTabla(char m[L][C])
+{    for(int i=1; i<=17; i++)
+        {for(int j=1; j<=17; j++)
+             {  if(i%2!=0)
+                   {
+                     if(j%2) m[i][j]='0';
+                        else m[i][j]='1';
+                   }    
+            else m[i][j]='1';
+             }
+        }  
+    m[1][9]='*';
+    m[17][9]='+';
+}
+
+void AltJucator()
+{
+    if(ordine%2)
+        cout<<"E randul lui *.   Ziduri ramase: "<<zid1<<endl;
+    else cout<<"E randul lui +.   Ziduri ramase: "<<zid2<<endl;
+}
+
+void GasireJucator1(char m[17][17] int &x int &y)
+      {int i, j;
+         for(i=1;i<17;i++)
+         for(j=1;j<17;j++)
+            if(m[i][j]=='*')
+            {
+                x=i;
+                y=j;
+                break;
+            }
+      }
+
+ void GasireJucator2(char m[17][17] int &x int &y)
+      {int i, j;
+         for(i=1;i<17;i++)
+         for(j=1;j<17;j++)
+            if(m[i][j]=='+')
+            {
+                x=i;
+                y=j;
+                break;
+            }
+      }
+      
+     
