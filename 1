@@ -13,7 +13,7 @@
 using namespace std;
 
 int i,j;
-char m[17][17];
+char m[L][C];
 int zid1=10;
 int zid2=10;
 int ordine=0;
@@ -41,7 +41,7 @@ void AltJucator()
     else cout<<"E randul lui +.   Ziduri ramase: "<<zid2<<endl;
 }
 
-void GasireJucator1(char m[17][17] int &x int &y)
+void GasireJucator1(char m[17][17], int &x, int &y)
       {int i, j;
          for(i=1;i<17;i++)
          for(j=1;j<17;j++)
@@ -53,7 +53,7 @@ void GasireJucator1(char m[17][17] int &x int &y)
             }
       }
 
- void GasireJucator2(char m[17][17] int &x int &y)
+ void GasireJucator2(char m[17][17] ,int &x, int &y)
       {int i, j;
          for(i=1;i<17;i++)
          for(j=1;j<17;j++)
