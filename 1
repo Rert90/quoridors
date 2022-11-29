@@ -14,8 +14,8 @@ using namespace std;
 
 int i,j;
 char m[L][C];
-int zid1=10;
-int zid2=10;
+int NrZiduri1=10;
+int NrZiduri2=10;
 int ordine=0;
 int finish=0;
 
@@ -37,8 +37,8 @@ void creareTabla(char m[L][C])
 void AltJucator()
 {
     if(ordine%2)
-        cout<<"E randul lui *.   Ziduri ramase: "<<zid1<<endl;
-    else cout<<"E randul lui +.   Ziduri ramase: "<<zid2<<endl;
+        cout<<"E randul lui *.   Ziduri ramase: "<<NrZiduri1<<endl;
+    else cout<<"E randul lui +.   Ziduri ramase: "<<NrZiduri2<<endl;
 }
 
 void GasireJucator1(char m[17][17], int &x, int &y)
