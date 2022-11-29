@@ -8,8 +8,8 @@
 #include <conio.h>
 #include <cstring>
 #include <cstdlib>
-#define L 18
-#define C 18
+#define L 17
+#define C 17
 using namespace std;
 
 int i,j;
@@ -41,7 +41,7 @@ void AltJucator()
     else cout<<"E randul lui +.   Ziduri ramase: "<<NrZiduri2<<endl;
 }
 
-void GasireJucator1(char m[17][17], int &x, int &y)
+void GasireJucator1(char m[L][C], int &x, int &y)
       {int i, j;
          for(i=1;i<17;i++)
          for(j=1;j<17;j++)
@@ -53,7 +53,7 @@ void GasireJucator1(char m[17][17], int &x, int &y)
             }
       }
 
- void GasireJucator2(char m[17][17] ,int &x, int &y)
+ void GasireJucator2(char m[L][C] ,int &x, int &y)
       {int i, j;
          for(i=1;i<17;i++)
          for(j=1;j<17;j++)
