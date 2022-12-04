@@ -73,6 +73,8 @@ void GasireJucator1(char m[L][C], int &x, int &y)
      }
      void PlasareZid(char m[L][C],int &x, int &y)
      { char orientare[10];
+     cout<<"unde vrei sa plasezi zidul? "<<endl;
+     cin>>x>>y;
      cout<<"ce zid vrei sa plasezi? (orizontal/vertical) ";
         cin>>orientare;
         if(strcmp(orientare,"orizontal")==0)
@@ -117,7 +119,8 @@ void GasireJucator1(char m[L][C], int &x, int &y)
          }
      }
      void mutareJucator1(char m[L][C], int &x, int &y)
-     {   char directie[10];
+     {  GasireJucator1(m,x,y); 
+        char directie[10];
          cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
          cin>>directie;
 
@@ -285,7 +288,7 @@ void GasireJucator1(char m[L][C], int &x, int &y)
             }
         }
         void mutareJucator2(char m[L][C],int x,int y)
-        {
+        {GasireJucator2(m,x,y);
             char directie[10];
             cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) "<<endl;
             cin>>directie;
@@ -459,39 +462,52 @@ void SelectiePatrat(char m[L][C],int x,int y)
     char continut;
     continut=VerificareContinut(m,x,y);
     if(ordine%2==1)
-    {
-        if(continut=='*')
-    {
-        mutareJucator1(m,x,y);
-        ordine++;
+    {   cout<<"apasa p daca vrei sa pui zid sau m daca vrei sa misti pionul"<<endl;
+        char alegere;
+        cin>>alegere;
+        if(alegere=='p')
+        {PlasareZid(m,x,y);
+            NrZiduri1--;
+            ordine++;
+        }
+        else if(alegere=='m')
+        {
+            mutareJucator1(m,x,y);
+            ordine++;
+        }
+        else
+        {
+            cout<<"alegere gresita"<<endl;
+            SelectiePatrat(m,x,y);
+        }
     }
-    else if(continut==1&&NrZiduri1&& !(x%2)&&!(y%2))
+    /*else if(continut==1&&NrZiduri1&& !(x%2)&&!(y%2))
         {PlasareZid(m,x,y);
         NrZiduri1--;
         ordine++;
         }
-
-
-    }
+*/
     else if(ordine%2==0)
-    {
-        if(continut=='@')
+    {   cout<<"apasa p daca vrei sa pui zid sau m daca vrei sa misti pionul"<<endl;
+        char alegere;
+        cin>>alegere;
+        if(alegere=='p')
+        {PlasareZid(m,x,y);
+            NrZiduri2--;
+            ordine++;
+        }
+        else if(alegere=='m')
         {
             mutareJucator2(m,x,y);
             ordine++;
-
         }
-        else if(continut==1&&NrZiduri2&& !(x%2)&&!(y%2))
+        else
         {
-            PlasareZid(m,x,y);
-             NrZiduri2--;
-            ordine++;
+            cout<<"alegere gresita"<<endl;
+            SelectiePatrat(m,x,y);
         }
+
     }
-    else {
-        cout<<"Nu se poate plasa zidul aici"<<endl;
-         SelectiePatrat(m,x,y);
-         }
 
 }
 bool finalJoc(char m[L][C])
