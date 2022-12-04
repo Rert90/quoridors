@@ -120,6 +120,7 @@ void GasireJucator1(char m[L][C], int &x, int &y)
      {   char directie[10];
          cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
          cin>>directie;
+
          if(strcmp(directie,"sus")==0)
          {
              if(m[x-2][y]=='0')
@@ -158,6 +159,7 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                     mutareJucator1(m,x,y);
                 }
             }
+
             }
             else if(strcmp(directie,"jos")==0)
             {
@@ -492,13 +494,30 @@ void SelectiePatrat(char m[L][C],int x,int y)
          }
 
 }
+bool finalJoc(char m[L][C])
+{
+    int j;
 
+    for(j=1;j<=C;j++)
+    {
+        if(m[1][j]=='@')
+        {
+            cout<<"Jucatorul 2 a castigat"<<endl;
+            return true;
+        }
+        else if(m[L][j]=='*')
+        {
+            cout<<"Jucatorul 1 a castigat"<<endl;
+            return true;
+        }
+    }
+    return false;
+}
      int main()
      {
-         int l=5;
          creareTabla(m);
          afisareMatrice(m);
-         while(l)
+         while(!finalJoc(m))
          {AltJucator();
          GasireJucator1(m,x,y);
          SelectiePatrat(m,x,y);
@@ -508,7 +527,6 @@ void SelectiePatrat(char m[L][C],int x,int y)
 
          SelectiePatrat(m,x,y);
         afisareMatrice(m);
-         l--;
          }
 
 
