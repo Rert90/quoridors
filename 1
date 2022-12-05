@@ -75,15 +75,23 @@ void GasireJucator1(char m[L][C], int &x, int &y)
      { char orientare[10];
      cout<<"unde vrei sa plasezi zidul? "<<endl;
      cin>>x>>y;
+        if(x<1 || x>17 || y<1 || y>17)
+        {
+            cout<<"Nu exista aceasta pozitie in matrice"<<endl;
+            PlasareZid(m,x,y);
+        }
+
+
+
      cout<<"ce zid vrei sa plasezi? (orizontal/vertical) ";
         cin>>orientare;
         if(strcmp(orientare,"orizontal")==0)
         {
-            if(m[x][y]=='1' && m[x][y+1]=='1' && m[x][y+2]=='1')
+            if(m[x][y]=='1' && m[x][y+1]=='1' && m[x][y-1]=='1')
             {
                 m[x][y]='-';
                 m[x][y+1]='-';
-                m[x][y+2]='-';
+                m[x][y-1]='-';
             }
             else
             {
@@ -94,11 +102,11 @@ void GasireJucator1(char m[L][C], int &x, int &y)
         }
         else if(strcmp(orientare,"vertical")==0)
         {
-            if(m[x][y]=='1' && m[x+1][y]=='1' && m[x+2][y]=='1')
+            if(m[x][y]=='1' && m[x+1][y]=='1' && m[x-1][y]=='1')
             {
                 m[x][y]='|';
                 m[x+1][y]='|';
-                m[x+2][y]='|';
+                m[x-1][y]='|';
             }
             else
             {
@@ -119,341 +127,263 @@ void GasireJucator1(char m[L][C], int &x, int &y)
          }
      }
      void mutareJucator1(char m[L][C], int &x, int &y)
-     {  GasireJucator1(m,x,y); 
+     {  GasireJucator1(m,x,y);
         char directie[10];
          cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
          cin>>directie;
 
          if(strcmp(directie,"sus")==0)
          {
-             if(m[x-2][y]=='0')
+             if(m[x-2][y]=='0'&&m[x-1][y]=='1')
             {
                 m[x][y]='0';
                 m[x-2][y]='*';
             }
-            else if(m[x-1][y]=='1')
+            else if(m[x-1][y]=='-')
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator1(m,x,y);
             }
             else if(m[x-1][y]=='|')
             {
-                if(m[x-2][y]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-2][y]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
+               cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
             }
-            else if(m[x-1][y]=='-')
+            else if(m[x-2][y]=='@'&&(m[x-3][y]=='-'||m[x-3][y]=='|'))
             {
-                if(m[x-1][y-1]=='0' && m[x-1][y+1]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-1][y-1]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+            }
+            else if(m[x-2][y]=='@'&&m[x-3][y]=='1')
+            {
+                m[x][y]='0';
+                m[x-4][y]='*';
             }
 
             }
             else if(strcmp(directie,"jos")==0)
             {
-                if(m[x+2][y]=='0')
+                if(m[x+2][y]=='0'&&m[x+1][y]=='1')
             {
                 m[x][y]='0';
                 m[x+2][y]='*';
             }
-            else if(m[x+1][y]=='1')
+            else if(m[x+1][y]=='|')
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator1(m,x,y);
-            }
-            else if(m[x+1][y]=='|')
-            {
-                if(m[x+2][y]=='0')
-                {
-                    m[x][y]='0';
-                    m[x+2][y]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
             }
             else if(m[x+1][y]=='-')
             {
-                if(m[x+2][y-2]=='0' && m[x+2][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x+2][y+2]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
-            }
-            }
-            else if(strcmp(directie,"stanga")==0)
-            {
-                if(m[x][y-2]=='0')
-            {
-                m[x][y]='0';
-                m[x][y-2]='*';
-            }
-            else if(m[x][y-2]=='1')
-            {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator1(m,x,y);
             }
-            else if(m[x][y-1]=='|')
+            else if(m[x+2][y]=='@'&&(m[x+3][y]=='-'||m[x+3][y]=='|'))
             {
-                if(m[x][y-2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x][y-2]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
+                cout<<"nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+
             }
-            else if(m[x][y-1]=='-')
+            else if(m[x+2][y]=='@'&&m[x+3][y]=='1')
             {
-                if(m[x-2][y-2]=='0' && m[x+2][y-2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-2][y-2]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
+                m[x][y]='0';
+                m[x+4][y]='*';
             }
             }
             else if(strcmp(directie,"dreapta")==0)
             {
-                if(m[x][y+2]=='0')
+                if(m[x][y+2]=='0'&&m[x][y+1]=='1')
             {
                 m[x][y]='0';
                 m[x][y+2]='*';
             }
-            else if(m[x][y+2]=='1')
+            else if(m[x][y+1]=='-')
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator1(m,x,y);
             }
             else if(m[x][y+1]=='|')
             {
-                if(m[x][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x][y+2]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
             }
-            else if(m[x][y+1]=='-')
-            {
-                if(m[x-2][y+2]=='0' && m[x+2][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x+2][y+2]='*';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-                }
-            }
-            }
-            else
+            else if(m[x][y+2]=='@'&&(m[x][y+3]=='-'||m[x][y+3]=='|'))
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator1(m,x,y);
             }
-        }
-        void mutareJucator2(char m[L][C],int x,int y)
-        {GasireJucator2(m,x,y);
-            char directie[10];
-            cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) "<<endl;
-            cin>>directie;
-            if(strcmp(directie,"sus")==0)
+            else if(m[x][y+2]=='@'&&m[x][y+3]=='1')
             {
-                if(m[x-2][y]=='0')
+                m[x][y]='0';
+                m[x][y+4]='*';
+            }
+            }
+            else if(strcmp(directie,"stanga")==0)
+            {
+                if(m[x][y-2]=='0'&&m[x][y-1]=='1')
+            {
+                m[x][y]='0';
+                m[x][y-2]='*';
+            }
+            else if(m[x][y-1]=='-')
+            {
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+            }
+            else if(m[x][y-1]=='|')
+            {
+
+                    cout<<"Nu se poate merge in aceasta directie"<<endl;
+                    mutareJucator1(m,x,y);
+
+            }
+            else if(m[x][y-2]=='@'&&(m[x][y-3]=='-'||m[x][y-3]=='|'))
+            {
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+            }
+            else if(m[x][y-2]=='@'&&m[x][y-3]=='1')
+            {
+                m[x][y]='0';
+                m[x][y-4]='*';
+            }
+            }
+
+
+        }
+
+        void mutareJucator2(char m[L][C], int &x, int &y)
+     {  GasireJucator2(m,x,y);
+        char directie[10];
+         cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
+         cin>>directie;
+
+         if(strcmp(directie,"sus")==0)
+         {
+             if(m[x-2][y]=='0'&&m[x-1][y]=='1')
             {
                 m[x][y]='0';
                 m[x-2][y]='@';
             }
-            else if(m[x-2][y]=='1')
+            else if(m[x-1][y]=='-')
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator2(m,x,y);
             }
             else if(m[x-1][y]=='|')
             {
-                if(m[x-2][y]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-2][y]='@';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-                }
+               cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
             }
-            else if(m[x-1][y]=='-')
-            {
-                if(m[x-2][y-2]=='0' && m[x-2][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-2][y-2]='@';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-                }
-            }
-            }
-            else if(strcmp(directie,"jos")==0)
-            {
-                if(m[x+2][y]=='0')
-            {
-                m[x][y]='0';
-                m[x+2][y]='@';
-            }
-            else if(m[x+2][y]=='1')
+            else if(m[x-2][y]=='*'&&(m[x-3][y]=='-'||m[x-3][y]=='|'))
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator2(m,x,y);
             }
-            else if(m[x+1][y]=='|')
-            {
-                if(m[x+2][y]=='0')
+            else if(m[x-2][y]=='*'&&m[x-3][y]=='1')
                 {
                     m[x][y]='0';
-                    m[x+2][y]='@';
+                    m[x-4][y]='@';
                 }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-                }
+
+
+            }
+            else if(strcmp(directie,"jos")==0)
+            {
+                if(m[x+2][y]=='0'&&m[x+1][y]=='1')
+            {
+                m[x][y]='0';
+                m[x+2][y]='@';
+            }
+            else if(m[x+1][y]=='|')
+            {
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
             }
             else if(m[x+1][y]=='-')
             {
-                if(m[x+2][y-2]=='0' && m[x+2][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x+2][y+2]='@';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-                }
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
+            }
+            else if(m[x+2][y]=='*'&&(m[x+3][y]=='-'||m[x+3][y]=='|'))
+            {
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
+            }
+            else if(m[x+2][y]=='*'&&m[x+3][y]=='1')
+            {
+                m[x][y]='0';
+                m[x+4][y]='@';
             }
             }
             else if(strcmp(directie,"stanga")==0)
             {
-                if(m[x][y-2]=='0')
+                if(m[x][y-2]=='0'&&m[x][y-1]=='1')
             {
                 m[x][y]='0';
                 m[x][y-2]='@';
             }
-            else if(m[x][y-2]=='1')
+            else if(m[x][y-1]=='-')
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator2(m,x,y);
             }
             else if(m[x][y-1]=='|')
             {
-                if(m[x][y-2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x][y-2]='@';
-                }
-                else
-                {
+
                     cout<<"Nu se poate merge in aceasta directie"<<endl;
                     mutareJucator2(m,x,y);
-                }
+
             }
-            else if(m[x][y-1]=='-')
+            else if(m[x][y-2]=='*'&&(m[x][y-3]=='-'||m[x][y-3]=='|'))
             {
-                if(m[x-2][y-2]=='0' && m[x+2][y-2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x-2][y-2]='@';
-                }
-                else
-                {
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-                }
+                cout<<"Nu se poate merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
             }
+            else if(m[x][y-2]=='*'&&m[x][y-3]=='1')
+            {
+                m[x][y]='0';
+                m[x][y-4]='@';
+
             }
             else if(strcmp(directie,"dreapta")==0)
             {
-                if(m[x][y+2]=='0')
+                if(m[x][y+2]=='0'&&m[x][y+1]=='1')
             {
                 m[x][y]='0';
                 m[x][y+2]='@';
             }
-            else if(m[x][y+2]=='1')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
+
             else if(m[x][y+1]=='|')
             {
-                if(m[x][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x][y+2]='@';
-                }
-                else
-                {
+
                     cout<<"Nu se poate merge in aceasta directie"<<endl;
                     mutareJucator2(m,x,y);
-                }
+
             }
             else if(m[x][y+1]=='-')
             {
-                if(m[x-2][y+2]=='0' && m[x+2][y+2]=='0')
-                {
-                    m[x][y]='0';
-                    m[x+2][y+2]='@';
-                }
-                else
-                {
+
                     cout<<"Nu se poate merge in aceasta directie"<<endl;
                     mutareJucator2(m,x,y);
-                }
+
             }
+            else if(m[x][y+2]=='*'&&m[x][y+3]=='1')
+            {
+                m[x][y]='0';
+                m[x][y+4]='@';
+
             }
-            else
+            else if(m[x][y+2]=='*'&&(m[x][y+3]=='-'||m[x][y+3]=='|'))
             {
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator2(m,x,y);
             }
+
+
         }
+     }
+     }
 int VerificareContinut(char m[L][C],int x,int y)
 {   return m[x][y];
 }
@@ -481,12 +411,6 @@ void SelectiePatrat(char m[L][C],int x,int y)
             SelectiePatrat(m,x,y);
         }
     }
-    /*else if(continut==1&&NrZiduri1&& !(x%2)&&!(y%2))
-        {PlasareZid(m,x,y);
-        NrZiduri1--;
-        ordine++;
-        }
-*/
     else if(ordine%2==0)
     {   cout<<"apasa p daca vrei sa pui zid sau m daca vrei sa misti pionul"<<endl;
         char alegere;
@@ -511,9 +435,15 @@ void SelectiePatrat(char m[L][C],int x,int y)
 
 }
 bool finalJoc(char m[L][C])
+
 {
     int j;
 
+    if(ordine==50)
+    {
+        cout<<"Jocul s-a terminat in egalitate"<<endl;
+        return true;
+    }
     for(j=1;j<=C;j++)
     {
         if(m[1][j]=='@')
@@ -540,11 +470,7 @@ bool finalJoc(char m[L][C])
          afisareMatrice(m);
          AltJucator();
          GasireJucator2(m,x,y);
-
          SelectiePatrat(m,x,y);
         afisareMatrice(m);
          }
-
-
-
      }
