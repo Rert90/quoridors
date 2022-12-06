@@ -2,6 +2,7 @@
 #include <winbgim.h>
 #include <graphics.h>
 #include <cmath>
+#include <ctime>
 #include <stdio.h>
 #include <windows.h>
 #include <fstream>
@@ -159,6 +160,10 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                 m[x][y]='0';
                 m[x-4][y]='*';
             }
+            else if(m[1][y]=='*')
+            {  cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+            }
 
             }
             else if(strcmp(directie,"jos")==0)
@@ -189,6 +194,11 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                 m[x][y]='0';
                 m[x+4][y]='*';
             }
+            else if(m[L][y]=='*')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
+            }
             }
             else if(strcmp(directie,"dreapta")==0)
             {
@@ -216,6 +226,11 @@ void GasireJucator1(char m[L][C], int &x, int &y)
             {
                 m[x][y]='0';
                 m[x][y+4]='*';
+            }
+            else if(m[x][C]=='*')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
             }
             }
             else if(strcmp(directie,"stanga")==0)
@@ -247,10 +262,15 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                 m[x][y]='0';
                 m[x][y-4]='*';
             }
+            else if(m[x][1]=='*')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator1(m,x,y);
             }
 
 
         }
+     }
 
         void mutareJucator2(char m[L][C], int &x, int &y)
      {  GasireJucator2(m,x,y);
@@ -285,8 +305,11 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                     m[x][y]='0';
                     m[x-4][y]='@';
                 }
-
-
+            else if(m[1][y]=='@')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
+            }
             }
             else if(strcmp(directie,"jos")==0)
             {
@@ -314,6 +337,11 @@ void GasireJucator1(char m[L][C], int &x, int &y)
             {
                 m[x][y]='0';
                 m[x+4][y]='@';
+            }
+            else if(m[L][y]=='@')
+            {
+                cout<<"nu poti merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
             }
             }
             else if(strcmp(directie,"stanga")==0)
@@ -345,6 +373,12 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                 m[x][y]='0';
                 m[x][y-4]='@';
 
+            }
+            else if(m[x][1]=='@')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
+            }
             }
             else if(strcmp(directie,"dreapta")==0)
             {
@@ -379,11 +413,19 @@ void GasireJucator1(char m[L][C], int &x, int &y)
                 cout<<"Nu se poate merge in aceasta directie"<<endl;
                 mutareJucator2(m,x,y);
             }
-
-
+            else if(m[x][C]=='@')
+            {
+                cout<<"Nu poti merge in aceasta directie"<<endl;
+                mutareJucator2(m,x,y);
+            }
+            }
+            else
+            {
+                cout<<"Nu ati introdus o directie valida"<<endl;
+                mutareJucator2(m,x,y);
+            }
         }
-     }
-     }
+
 int VerificareContinut(char m[L][C],int x,int y)
 {   return m[x][y];
 }
