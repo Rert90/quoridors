@@ -1,518 +1,1523 @@
-#include <iostream>
+    #include <iostream>
 #include <winbgim.h>
 #include <graphics.h>
 #include <cmath>
-#include <ctime>
 #include <stdio.h>
 #include <windows.h>
 #include <fstream>
 #include <conio.h>
 #include <cstring>
 #include <cstdlib>
-#define L 17
-#define C 17
+#include <ctime>
+#include <string>
+#define L 18
+#define C 18
+
 using namespace std;
 
-int i,j;
-int x,y;
+
+
+const int width = 1520;
+const int height = 800;
+float speed=200;
+int paritateMiscare = rand()%2;
+int padding=1;
+int marimeButon=100;
+int ox=280,oy=250, vx=ox,vy=oy+200;
 char m[L][C];
-int NrZiduri1=10;
-int NrZiduri2=10;
-int ordine=1;
-int finish=0;
+int i,j;
+int x,y,nx,ny;
+int finish = 0;
+int nrZiduri1 =10;
+int nrZiduri2 = 10;
+bool aFostConvertit;
+void creareTabla(char[L][C]);
+void afisareMatriceDirectii(char[L][C]);
+void desenareMutariValide(char, int, int);
+void WaitForOrientare(char[10]);
+void ResetAtPlayAgain(char[L][C]);
+void desenareButoaneOV(int);
+void desenareMatrice(char[L][C]);
+void desenareTablaDeJoc(char[L][C]);
+void verificareSusP1(char[L][C], char[L][C], int,int,bool&);
+void verificareJosP1(char[L][C], char[L][C], int,int,bool&);
+void verificareStangaP1(char[L][C], char[L][C], int,int,bool&);
+void verificareDreaptaP1(char[L][C], char[L][C], int,int,bool&);
+void verificareSusP2(char[L][C], char[L][C], int,int,bool&);
+void verificareJosP2(char[L][C], char[L][C], int,int,bool&);
+void verificareStangaP2(char[L][C], char[L][C], int,int,bool&);
+void verificareDreaptaP2(char[L][C], char[L][C], int,int,bool&);
+void afisareTablaJoc(char[L][C]);
+void WaitForClick(int&, int&);
+void ToString(int, char[3]);
+int Can1Escape(char[L][C]);
+int Can2Escape(char[L][C]);
+char selectarePatrat(char[L][C],int, int);
+bool verificareZiduriDreapta(char[L][C], int, int);
+bool verificareZiduriStanga(char[L][C], int, int);
+bool verificareZiduriJos(char[L][C], int, int);
+bool verificareZiduriSus(char[L][C], int, int);
 
-void creareTabla(char m[L][C])
-{    for(int i=1; i<=17; i++)
-        {for(int j=1; j<=17; j++)
-             {  if(i%2!=    0)
-                   {
-                     if(j%2) m[i][j]='0';
-                        else m[i][j]='1';
-                   }
-            else m[i][j]='1';
-             }
-        }
-    m[1][9]='*';
-    m[17][9]='@';
-}
-void AltJucator()
+
+
+void Finish(int &finish, char m[L][C])
 {
-    if(ordine%2)
-        cout<<"E randul lui *.   Ziduri ramase: "<<NrZiduri1<<endl;
-    else cout<<"E randul lui @.   Ziduri ramase: "<<NrZiduri2<<endl;
+
+    if(finish!=0)
+    {
+
+
+        char player[3];
+        char whoWon[14];
+        ToString(finish, player);
+        strcpy(whoWon, "Player   won!");
+        whoWon[7]=player[0];
+
+
+
+        if(finish==1)
+            setbkcolor(RGB(92, 203, 255));
+        else setbkcolor(RGB(149, 102, 250));
+        setcolor(WHITE);
+        settextstyle(GOTHIC_FONT, 0, 19);
+        settextjustify(CENTER_TEXT,CENTER_TEXT);
+        outtextxy(width/2,height/2+25, whoWon);
+
+
+    }
 }
 
-void GasireJucator1(char m[L][C], int &x, int &y)
-      {int i, j;
-         for(i=1;i<=17;i++)
-         for(j=1;j<=17;j++)
+
+void copiereMatrice(char m[L][C], char copie[L][C])
+{
+    for(int i=1; i<=17; i++)
+    {
+        for(int j=1; j<=17; j++)
+        {
+            copie[i][j]=m[i][j];
+        }
+    }
+
+}
+void plasareZid(char m[L][C],int x,int y)
+{
+    desenareTablaDeJoc(m);
+    setfillstyle(SOLID_FILL, BLACK);
+    setcolor(WHITE);
+    int xPtDesen = y/2*80+400;
+    int yPtDesen = x/2*80+40;
+    fillellipse(xPtDesen,yPtDesen,10,10);
+    desenareButoaneOV(100);
+    char orientare[10];
+    char copie[L][C];
+    copiereMatrice(m, copie);
+
+    if(aFostConvertit==true)
+    {
+
+        WaitForOrientare(orientare);
+    }
+
+
+
+
+    if(strcmp(orientare, "vertical")==0)
+    {
+        if(copie[x-1][y] == '1' && copie[x+1][y] == '1')
+        {
+            copie[x-1][y] = '|';
+            copie[x][y] = '|';
+            copie[x+1][y] = '|';
+        }
+        else
+        {
+
+            cout<<"Nu poti aici!"<<endl;
+            desenareButoaneOV(200);
+            desenareMatrice(m);
+            int i,j;
+            cout<<"Selectez patratul: ";
+            WaitForClick(j,i);
+            selectarePatrat(m,i,j);
+        }
+        if(Can1Escape(copie)&&Can2Escape(copie))
+        {
+
+            if(m[x-1][y] == '1' && m[x+1][y] == '1')
+            {
+                if(paritateMiscare%2==0)
+                {
+                    nrZiduri1--;
+                    paritateMiscare++;
+                }
+                else
+                {
+                    nrZiduri2--;
+                    paritateMiscare++;
+                }
+
+                m[x-1][y] = '|';
+                m[x][y] = '^';
+                m[x+1][y] = '|';
+            }
+
+        }
+        else
+        {
+
+            cout<<"Nu poti ingradi definitiv jucatori cu ziduri!"<<endl<<"Selecteaza altceva!"<<endl;
+            int i,j;
+            desenareButoaneOV(200);
+            desenareMatrice(m);
+            cout<<"Selectez patratul: ";
+            WaitForClick(j,i);
+            selectarePatrat(m,i,j);
+        }
+    }
+    else if(strcmp(orientare,"orizontal")==0)
+    {
+
+        if(copie[x][y-1] == '1' && copie[x][y+1] == '1')
+        {
+            copie[x][y-1] = '-';
+            copie[x][y] = '-';
+            copie[x][y+1] = '-';
+        }
+        else
+        {
+             //EROARE INGRADIRE
+            cout<<"Nu poti aici!"<<endl;
+            int i,j;
+            desenareButoaneOV(200);
+            desenareMatrice(m);
+            cout<<"Selectez patratul: ";
+            WaitForClick(j,i);
+            selectarePatrat(m,i,j);
+        }
+        if(Can1Escape(copie)&&Can2Escape(copie))
+        {
+
+
+            if(m[x][y-1] == '1' && m[x][y+1] == '1')
+            {
+                if(paritateMiscare%2==0)
+                {
+                    nrZiduri1--;
+                    paritateMiscare++;
+                }
+                else
+                {
+                    nrZiduri2--;
+                    paritateMiscare++;
+                }
+                  //PLASARE ZID
+                m[x][y-1] = '-';
+                m[x][y] = '>';
+                m[x][y+1] = '-';
+                int plasareX, plasareY;
+
+
+            }
+        }
+        else
+        {
+
+            cout<<"Nu poti ingradi definitiv jucatori cu ziduri!"<<endl<<"Selecteaza altceva!"<<endl;
+            int i,j;
+            desenareButoaneOV(200);
+            desenareMatrice(m);
+            cout<<"Selectez patratul: ";
+            WaitForClick(j,i);
+            selectarePatrat(m,i,j);
+
+        }
+    }
+    else if(strcmp(orientare,"razgandit")==0)
+    {
+        //EROARE RAZGANDIT
+        int x,y;
+        desenareTablaDeJoc(m);
+        WaitForClick(y,x);
+        selectarePatrat(m,x,y);
+    }
+
+
+}
+bool miscareValidaPion(char m[L][C], int x,int y,int plecareX,int plecareY)
+{
+    int distantaAbsolutaX= abs(x-plecareX);
+    int distantaAbsolutaY= abs(y-plecareY);
+    int distantaNulaX = x-plecareX;
+    int distantaNulaY = y-plecareY;
+    if(x<18 && y<18 && x>0 && y>0)
+    {
+
+
+        if((distantaAbsolutaX == 2 && distantaNulaY==0)||(distantaAbsolutaY == 2 && distantaNulaX==0))
+        {
+            if(m[(x+plecareX)/2][(y+plecareY)/2]=='1' && m[x][y]=='0')
+            {
+                paritateMiscare++;
+                return true;
+            }
+
+        }
+        else if((distantaAbsolutaX == 4 && distantaNulaY==0)||(distantaAbsolutaY == 4 && distantaNulaX==0))
+        {
+            if(m[(x+plecareX)/2][(y+plecareY)/2]=='*' || m[(x+plecareX)/2][(y+plecareY)/2]=='#')
+            {
+                if(y==plecareY)
+                {
+                    if(m[(x+plecareX)/2+1][y]=='1' &&  m[(x+plecareX)/2-1][y]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                }
+                else if (x==plecareX)
+                {
+                    if(m[x][(y+plecareY)/2+1]=='1' && m[x][(y+plecareY)/2-1]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                }
+            }
+        }
+        else if(distantaAbsolutaX == 2 && distantaAbsolutaY == 2)
+        {
+            if(x==plecareX-2 && y==plecareY+2)  //1
+            {
+                if(verificareZiduriDreapta(m, plecareX, plecareY))
+                    if(m[plecareX-1][plecareY+2]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                if(verificareZiduriSus(m, plecareX, plecareY))
+                    if(m[plecareX-2][plecareY+1]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+            }
+            if(x==plecareX+2 && y==plecareY+2)   //2
+            {
+                if(verificareZiduriDreapta(m, plecareX, plecareY))
+                    if(m[plecareX+1][plecareY+2]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                if(verificareZiduriJos(m, plecareX, plecareY))
+                    if(m[plecareX+2][plecareY+1]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+            }
+            if(x==plecareX+2 && y==plecareY-2)    //3
+            {
+                if(verificareZiduriJos(m, plecareX, plecareY))
+                    if(m[plecareX+2][plecareY-1]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                if(verificareZiduriStanga(m, plecareX, plecareY))
+                    if(m[plecareX+1][plecareY-2]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+            }
+            if(x==plecareX-2 && y==plecareY-2)     //4
+            {
+
+                if(verificareZiduriSus(m, plecareX, plecareY))
+                    if(m[plecareX-2][plecareY-1]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+                if(verificareZiduriStanga(m, plecareX, plecareY))
+                    if(m[plecareX-1][plecareY-2]=='1')
+                    {
+                        paritateMiscare++;
+                        return true;
+                    }
+            }
+        }
+
+    }
+    return false;
+
+}
+
+
+
+bool miscareValidaPionPtDesenare(char m[L][C], int x,int y,int plecareX,int plecareY)
+{
+    int distantaAbsolutaX= abs(x-plecareX);
+    int distantaAbsolutaY= abs(y-plecareY);
+    int distantaNulaX = x-plecareX;
+    int distantaNulaY = y-plecareY;
+    if(x<18 && y<18 && x>0 && y>0)
+    {
+
+
+        if((distantaAbsolutaX == 2 && distantaNulaY==0)||(distantaAbsolutaY == 2 && distantaNulaX==0))
+        {
+            if(m[(x+plecareX)/2][(y+plecareY)/2]=='1' && m[x][y]=='0')
+            {
+
+                return true;
+            }
+
+        }
+        else if((distantaAbsolutaX == 4 && distantaNulaY==0)||(distantaAbsolutaY == 4 && distantaNulaX==0))
+        {
+            if(m[(x+plecareX)/2][(y+plecareY)/2]=='*' || m[(x+plecareX)/2][(y+plecareY)/2]=='#')
+            {
+                if(y==plecareY)
+                {
+                    if(m[(x+plecareX)/2+1][y]=='1' &&  m[(x+plecareX)/2-1][y]=='1')
+                    {
+
+                        return true;
+                    }
+                }
+                else if (x==plecareX)
+                {
+                    if(m[x][(y+plecareY)/2+1]=='1' && m[x][(y+plecareY)/2-1]=='1')
+                    {
+
+                        return true;
+                    }
+                }
+            }
+        }
+        else if(distantaAbsolutaX == 2 && distantaAbsolutaY == 2)
+        {
+            if(x==plecareX-2 && y==plecareY+2)  //1
+            {
+                if(verificareZiduriDreapta(m, plecareX, plecareY))
+                    if(m[plecareX-1][plecareY+2]=='1')
+                    {
+
+                        return true;
+                    }
+                if(verificareZiduriSus(m, plecareX, plecareY))
+                    if(m[plecareX-2][plecareY+1]=='1')
+                    {
+
+                        return true;
+                    }
+            }
+            if(x==plecareX+2 && y==plecareY+2)   //2
+            {
+                if(verificareZiduriDreapta(m, plecareX, plecareY))
+                    if(m[plecareX+1][plecareY+2]=='1')
+                    {
+
+                        return true;
+                    }
+                if(verificareZiduriJos(m, plecareX, plecareY))
+                    if(m[plecareX+2][plecareY+1]=='1')
+                    {
+
+                        return true;
+                    }
+            }
+            if(x==plecareX+2 && y==plecareY-2)    //3
+            {
+                if(verificareZiduriJos(m, plecareX, plecareY))
+                    if(m[plecareX+2][plecareY-1]=='1')
+                    {
+
+                        return true;
+                    }
+                if(verificareZiduriStanga(m, plecareX, plecareY))
+                    if(m[plecareX+1][plecareY-2]=='1')
+                    {
+
+                        return true;
+                    }
+            }
+            if(x==plecareX-2 && y==plecareY-2)     //4
+            {
+
+                if(verificareZiduriSus(m, plecareX, plecareY))
+                    if(m[plecareX-2][plecareY-1]=='1')
+                    {
+
+                        return true;
+                    }
+                if(verificareZiduriStanga(m, plecareX, plecareY))
+                    if(m[plecareX-1][plecareY-2]=='1')
+                    {
+
+                        return true;
+                    }
+            }
+        }
+
+    }
+    return false;
+
+}
+
+
+
+
+char getContinut(char m[L][C], int x, int y)
+{
+    return m[x][y];
+}
+void mutarePion(char m[L][C], int x, int y, char continut)
+{
+    int x1,y1;
+    cout<<endl;
+    cout<<"Mutare la: ";
+    WaitForClick(y1,x1);
+
+    if(miscareValidaPion(m, x1, y1, x, y))
+    {
+        swap(m[x1][y1], m[x][y]);
+
+        if(continut=='*' && x1==17)
+        {
+            paritateMiscare-=1;
+            finish=1;
+            desenareTablaDeJoc(m);
+        }
+        if(continut=='#' && x1==1)
+        {
+            paritateMiscare-=1;
+            finish=2;
+            desenareTablaDeJoc(m);
+        }
+
+    }
+    else
+    {
+
+        cout<<"Miscare invalida"<<endl;
+        desenareTablaDeJoc(m);
+        cout<<"Selectez patratul: ";
+        int i,j;
+        WaitForClick(j,i);
+        selectarePatrat(m,i,j);
+    }
+
+}
+char selectarePatrat(char m[L][C], int x, int y)
+{
+    char continut = getContinut(m, x, y);
+    if(continut=='*' && paritateMiscare%2==0)
+    {
+
+        desenareMutariValide('*',x,y);
+    }
+    if(continut=='#' && paritateMiscare%2==1)
+    {
+
+        desenareMutariValide('#',x,y);
+    }
+    if(!(paritateMiscare%2))
+    {
+
+        if(continut=='*')
+        {
+            mutarePion(m, x, y, '*');
+
+        }
+        else if(continut=='1' && !(x%2) && !(y%2))
+        {
+
+            if(nrZiduri1!=0)
+            {
+                plasareZid(m, x, y);
+
+            }
+            else if(nrZiduri1<=0)
+            {
+
+                cout<<"Nu mai ai ziduri disponibile! "<<endl;
+                int i,j;
+                cout<<"Selectez patratul: ";
+                WaitForClick(j,i);
+                selectarePatrat(m, i, j);
+            }
+        }
+        else
+        {
+
+
+            cout<<"Nu poti plasa aici!"<<endl;
+            cout<<"Selectez patratul: ";
+            WaitForClick(y,x);
+            selectarePatrat(m, x, y);
+        }
+
+    }
+    else if(paritateMiscare%2)
+    {
+
+        if(continut=='#')
+        {
+            mutarePion(m,x,y,'#');
+
+        }
+        else if(continut=='1' && !(x%2) && !(y%2))
+        {
+
+            if(nrZiduri2!=0)
+            {
+                plasareZid(m, x, y);
+
+            }
+            else if(nrZiduri2<=0)
+            {
+
+                cout<<"Nu mai ai ziduri disponibile! "<<endl;
+                int i,j;
+                cout<<"Selectez patratul: ";
+                WaitForClick(j,i);
+                selectarePatrat(m, i, j);
+            }
+        }
+        else
+        {
+
+            cout<<"Nu poti plasa aici!"<<endl;
+            cout<<"Selectez patratul: ";
+            WaitForClick(y,x);
+            selectarePatrat(m, x, y);
+        }
+    }
+}
+void creareTabla(char m[L][C])
+{
+    for(int i=1; i<=17; i++)
+    {
+        for(int j=1; j<=17; j++)
+        {
+            if(i%2!=0)
+            {
+                if(j%2)
+                {
+                    m[i][j]='0';
+                }
+                else
+                {
+                    m[i][j]='1';
+                }
+            }
+            else m[i][j]='1';
+        }
+    }
+    m[1][9]='*';
+    m[17][9]='#';
+}
+void eRandulLui()
+{
+    if(paritateMiscare%2)
+        cout<<"E randul lui #.   Ziduri ramase: "<<nrZiduri2<<endl;
+    else cout<<"E randul lui *.   Ziduri ramase: "<<nrZiduri1<<endl;
+}
+
+void FindPlayer1(char m[L][C], int &x, int &y)
+{
+    int i,j;
+    for(i=1; i<=17; i++)
+    {
+        for(j=1; j<=17; j++)
+        {
+            if(m[i][j]=='#')
+            {
+                x=i;
+                y=j;
+                break;
+            }
+        }
+    }
+}
+void FindPlayer2(char m[L][C], int &x, int &y)
+{
+    int i,j;
+    for(i=1; i<=17; i++)
+    {
+        for(j=1; j<=17; j++)
+        {
             if(m[i][j]=='*')
             {
                 x=i;
                 y=j;
                 break;
             }
-      }
-
- void GasireJucator2(char m[L][C] ,int &x, int &y)
-      {int i, j;
-         for(i=1;i<=17;i++)
-         for(j=1;j<=17;j++)
-            if(m[i][j]=='@')
-            {
-                x=i;
-                y=j;
-                break;
-            }
-      }
-
-     void copiereMatrice(char m[L][C], char copie[L][C])
-     {
-         for(int i=1;i<=17;i++)
-         for(int j=1;j<=17;j++)
-         copie[i][j]=m[i][j];
-     }
-     void PlasareZid(char m[L][C],int &x, int &y)
-     { char orientare[10];
-     cout<<"unde vrei sa plasezi zidul? "<<endl;
-     cin>>x>>y;
-        if(x<1 || x>17 || y<1 || y>17)
-        {
-            cout<<"Nu exista aceasta pozitie in matrice"<<endl;
-            PlasareZid(m,x,y);
-        }
-
-
-
-     cout<<"ce zid vrei sa plasezi? (orizontal/vertical) ";
-        cin>>orientare;
-        if(strcmp(orientare,"orizontal")==0)
-        {
-            if(m[x][y]=='1' && m[x][y+1]=='1' && m[x][y-1]=='1')
-            {
-                m[x][y]='-';
-                m[x][y+1]='-';
-                m[x][y-1]='-';
-            }
-            else
-            {
-                cout<<"Nu se poate plasa aici un zid orizontal"<<endl;
-
-                PlasareZid(m,x,y);
-            }
-        }
-        else if(strcmp(orientare,"vertical")==0)
-        {
-            if(m[x][y]=='1' && m[x+1][y]=='1' && m[x-1][y]=='1')
-            {
-                m[x][y]='|';
-                m[x+1][y]='|';
-                m[x-1][y]='|';
-            }
-            else
-            {
-                cout<<"Nu se poate plasa aici un zid vertical"<<endl;
-                PlasareZid(m,x,y);
-
-            }
-     }
-
-     }
-     void afisareMatrice(char m[L][C])
-     {  system("cls");
-         for(int i=1;i<=17;i++)
-         {
-             for(int j=1;j<=17;j++)
-             cout<<m[i][j]<<" ";
-             cout<<endl;
-         }
-     }
-     void mutareJucator1(char m[L][C], int &x, int &y)
-     {  GasireJucator1(m,x,y);
-        char directie[10];
-         cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
-         cin>>directie;
-
-         if(strcmp(directie,"sus")==0)
-         {
-             if(m[x-2][y]=='0'&&m[x-1][y]=='1')
-            {
-                m[x][y]='0';
-                m[x-2][y]='*';
-            }
-            else if(m[x-1][y]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x-1][y]=='|')
-            {
-               cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x-2][y]=='@'&&(m[x-3][y]=='-'||m[x-3][y]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x-2][y]=='@'&&m[x-3][y]=='1')
-            {
-                m[x][y]='0';
-                m[x-4][y]='*';
-            }
-            else if(m[1][y]=='*')
-            {  cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-
-            }
-            else if(strcmp(directie,"jos")==0)
-            {
-                if(m[x+2][y]=='0'&&m[x+1][y]=='1')
-            {
-                m[x][y]='0';
-                m[x+2][y]='*';
-            }
-            else if(m[x+1][y]=='|')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x+1][y]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x+2][y]=='@'&&(m[x+3][y]=='-'||m[x+3][y]=='|'))
-            {
-                cout<<"nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-
-            }
-            else if(m[x+2][y]=='@'&&m[x+3][y]=='1')
-            {
-                m[x][y]='0';
-                m[x+4][y]='*';
-            }
-            else if(m[L][y]=='*')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            }
-            else if(strcmp(directie,"dreapta")==0)
-            {
-                if(m[x][y+2]=='0'&&m[x][y+1]=='1')
-            {
-                m[x][y]='0';
-                m[x][y+2]='*';
-            }
-            else if(m[x][y+1]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x][y+1]=='|')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x][y+2]=='@'&&(m[x][y+3]=='-'||m[x][y+3]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x][y+2]=='@'&&m[x][y+3]=='1')
-            {
-                m[x][y]='0';
-                m[x][y+4]='*';
-            }
-            else if(m[x][C]=='*')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            }
-            else if(strcmp(directie,"stanga")==0)
-            {
-                if(m[x][y-2]=='0'&&m[x][y-1]=='1')
-            {
-                m[x][y]='0';
-                m[x][y-2]='*';
-            }
-            else if(m[x][y-1]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x][y-1]=='|')
-            {
-
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator1(m,x,y);
-
-            }
-            else if(m[x][y-2]=='@'&&(m[x][y-3]=='-'||m[x][y-3]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-            else if(m[x][y-2]=='@'&&m[x][y-3]=='1')
-            {
-                m[x][y]='0';
-                m[x][y-4]='*';
-            }
-            else if(m[x][1]=='*')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator1(m,x,y);
-            }
-
-
-        }
-     }
-
-        void mutareJucator2(char m[L][C], int &x, int &y)
-     {  GasireJucator2(m,x,y);
-        char directie[10];
-         cout<<"In ce directie vrei sa te misti? (sus/jos/stanga/dreapta) ";
-         cin>>directie;
-
-         if(strcmp(directie,"sus")==0)
-         {
-             if(m[x-2][y]=='0'&&m[x-1][y]=='1')
-            {
-                m[x][y]='0';
-                m[x-2][y]='@';
-            }
-            else if(m[x-1][y]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x-1][y]=='|')
-            {
-               cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x-2][y]=='*'&&(m[x-3][y]=='-'||m[x-3][y]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x-2][y]=='*'&&m[x-3][y]=='1')
-                {
-                    m[x][y]='0';
-                    m[x-4][y]='@';
-                }
-            else if(m[1][y]=='@')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            }
-            else if(strcmp(directie,"jos")==0)
-            {
-                if(m[x+2][y]=='0'&&m[x+1][y]=='1')
-            {
-                m[x][y]='0';
-                m[x+2][y]='@';
-            }
-            else if(m[x+1][y]=='|')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x+1][y]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x+2][y]=='*'&&(m[x+3][y]=='-'||m[x+3][y]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x+2][y]=='*'&&m[x+3][y]=='1')
-            {
-                m[x][y]='0';
-                m[x+4][y]='@';
-            }
-            else if(m[L][y]=='@')
-            {
-                cout<<"nu poti merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            }
-            else if(strcmp(directie,"stanga")==0)
-            {
-                if(m[x][y-2]=='0'&&m[x][y-1]=='1')
-            {
-                m[x][y]='0';
-                m[x][y-2]='@';
-            }
-            else if(m[x][y-1]=='-')
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x][y-1]=='|')
-            {
-
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-
-            }
-            else if(m[x][y-2]=='*'&&(m[x][y-3]=='-'||m[x][y-3]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x][y-2]=='*'&&m[x][y-3]=='1')
-            {
-                m[x][y]='0';
-                m[x][y-4]='@';
-
-            }
-            else if(m[x][1]=='@')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            }
-            else if(strcmp(directie,"dreapta")==0)
-            {
-                if(m[x][y+2]=='0'&&m[x][y+1]=='1')
-            {
-                m[x][y]='0';
-                m[x][y+2]='@';
-            }
-
-            else if(m[x][y+1]=='|')
-            {
-
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-
-            }
-            else if(m[x][y+1]=='-')
-            {
-
-                    cout<<"Nu se poate merge in aceasta directie"<<endl;
-                    mutareJucator2(m,x,y);
-
-            }
-            else if(m[x][y+2]=='*'&&m[x][y+3]=='1')
-            {
-                m[x][y]='0';
-                m[x][y+4]='@';
-
-            }
-            else if(m[x][y+2]=='*'&&(m[x][y+3]=='-'||m[x][y+3]=='|'))
-            {
-                cout<<"Nu se poate merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            else if(m[x][C]=='@')
-            {
-                cout<<"Nu poti merge in aceasta directie"<<endl;
-                mutareJucator2(m,x,y);
-            }
-            }
-            else
-            {
-                cout<<"Nu ati introdus o directie valida"<<endl;
-                mutareJucator2(m,x,y);
-            }
-        }
-
-int VerificareContinut(char m[L][C],int x,int y)
-{   return m[x][y];
-}
-void SelectiePatrat(char m[L][C],int x,int y)
-{
-    char continut;
-    continut=VerificareContinut(m,x,y);
-    if(ordine%2==1)
-    {   cout<<"apasa p daca vrei sa pui zid sau m daca vrei sa misti pionul"<<endl;
-        char alegere;
-        cin>>alegere;
-        if(alegere=='p')
-        {PlasareZid(m,x,y);
-            NrZiduri1--;
-            ordine++;
-        }
-        else if(alegere=='m')
-        {
-            mutareJucator1(m,x,y);
-            ordine++;
-        }
-        else
-        {
-            cout<<"alegere gresita"<<endl;
-            SelectiePatrat(m,x,y);
         }
     }
-    else if(ordine%2==0)
-    {   cout<<"apasa p daca vrei sa pui zid sau m daca vrei sa misti pionul"<<endl;
-        char alegere;
-        cin>>alegere;
-        if(alegere=='p')
-        {PlasareZid(m,x,y);
-            NrZiduri2--;
-            ordine++;
-        }
-        else if(alegere=='m')
-        {
-            mutareJucator2(m,x,y);
-            ordine++;
-        }
-        else
-        {
-            cout<<"alegere gresita"<<endl;
-            SelectiePatrat(m,x,y);
-        }
-
-    }
-
 }
-bool finalJoc(char m[L][C])
 
+
+bool verificareZiduriDreapta(char m[L][C], int x, int y)
 {
-    int j;
-
-    if(ordine==50)
-    {
-        cout<<"Jocul s-a terminat in egalitate"<<endl;
+    if(m[x][y+3]!='1' && m[x][y+1] == '1' && m[x][y+2]!='0')
         return true;
-    }
-    for(j=1;j<=C;j++)
-    {
-        if(m[1][j]=='@')
-        {
-            cout<<"Jucatorul 2 a castigat"<<endl;
-            return true;
-        }
-        else if(m[L][j]=='*')
-        {
-            cout<<"Jucatorul 1 a castigat"<<endl;
-            return true;
-        }
-    }
     return false;
 }
-     int main()
-     {
-         creareTabla(m);
-         afisareMatrice(m);
-         while(!finalJoc(m))
-         {AltJucator();
-         GasireJucator1(m,x,y);
-         SelectiePatrat(m,x,y);
-         afisareMatrice(m);
-         AltJucator();
-         GasireJucator2(m,x,y);
-         SelectiePatrat(m,x,y);
-        afisareMatrice(m);
-         }
-     }
+bool verificareZiduriSus(char m[L][C], int x, int y)
+{
+    if(m[x-3][y]!='1' && m[x-1][y] == '1' && m[x-2][y]!='0')
+        return true;
+    return false;
+}
+bool verificareZiduriJos(char m[L][C], int x, int y)
+{
+    if(m[x+3][y]!='1' && m[x+1][y] == '1' && m[x+2][y]!='0')
+        return true;
+    return false;
+}
+bool verificareZiduriStanga(char m[L][C], int x, int y)
+{
+    if(m[x][y-3]!='1' && m[x][y-1] == '1' && m[x][y-2]!='0')
+        return true;
+    return false;
+}
+
+void verificareSusP1(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==1)
+    {
+        amGasit=true;
+        return;
+    }
+    if(x<18 && y<18 && x>0 && y>0)
+    {
+        aux[x][y]='v';
+        if(m[x-1][y]=='1' && aux[x-2][y]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareSusP1(m, aux, x-2, y, amGasit);
+
+        }
+        if(m[x][y+1]=='1'&& aux[x][y+2]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareDreaptaP1(m, aux, x, y+2, amGasit);
+
+        }
+        if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareStangaP1(m, aux, x, y-2, amGasit);
+
+        }
+    }
+}
+void verificareStangaP1(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==1)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+
+    if(m[x-1][y]=='1'&& aux[x-2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareSusP1(m, aux, x-2, y, amGasit);
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareStangaP1(m, aux, x, y-2, amGasit);
+    }
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP1(m, aux, x+2, y, amGasit);
+    }
+
+}
+void verificareDreaptaP1(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==1)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+    if(m[x-1][y]=='1'&& aux[x-2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareSusP1(m, aux, x-2, y, amGasit);
+
+    }
+    if(m[x][y+1]=='1' && aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareDreaptaP1(m, aux, x, y+2, amGasit);
+
+    }
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP1(m, aux, x+2, y, amGasit);
+
+    }
+
+}
+void verificareJosP1(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==1)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+
+    if(m[x][y+1]=='1'&& aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareDreaptaP1(m, aux, x, y+2, amGasit);
+
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareStangaP1(m, aux, x, y-2, amGasit);
+
+    }
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP1(m, aux, x+2, y, amGasit);
+
+    }
+
+}
+int Can1Escape(char m[L][C])
+{
+    int a,b,c,d;
+    FindPlayer1(m,a,b);
+    FindPlayer2(m,c,d);
+
+    int x, y;
+    char aux[L][C];
+    creareTabla(aux);
+    aux[c][d]='0';
+    aux[a][b]='v';
+    bool amGasit=false;
+    FindPlayer1(m,x,y);
+
+    if(m[x-1][y]=='1' &&  aux[x-2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+
+            return 1;
+
+        }
+        verificareSusP1(m, aux, x-2, y, amGasit);
+
+    }
+    if(m[x][y+1]=='1' && aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareDreaptaP1(m, aux, x, y+2, amGasit);
+
+
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareStangaP1(m, aux, x, y-2, amGasit);
+    }
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareJosP1(m, aux, x+2, y, amGasit);
+    }
+    if(amGasit==true)
+    {
+
+        return 1;
+    }
+    else
+    {
+
+        return 0;
+    }
+
+}
+
+void verificareSusP2(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==17)
+    {
+        amGasit=true;
+        return;
+    }
+    if(x<18 && y<18 && x>0 && y>0)
+    {
+        aux[x][y]='v';
+        if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareStangaP2(m, aux, x, y-2, amGasit);
+
+        }
+        if(m[x][y+1]=='1'&& aux[x][y+2]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareDreaptaP2(m, aux, x, y+2, amGasit);
+
+        }
+        if(m[x-1][y]=='1' && aux[x-2][y]!='v')
+        {
+            if(amGasit==true)
+            {
+                return;
+            }
+            verificareSusP2(m, aux, x-2, y, amGasit);
+
+        }
+    }
+}
+void verificareStangaP2(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==17)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP2(m, aux, x+2, y, amGasit);
+
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareStangaP2(m, aux, x, y-2, amGasit);
+
+    }
+    if(m[x-1][y]=='1'&& aux[x-2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareSusP2(m, aux, x-2, y, amGasit);
+
+    }
+
+}
+void verificareDreaptaP2(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==17)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP2(m, aux, x+2, y, amGasit);
+
+    }
+    if(m[x][y+1]=='1' && aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareDreaptaP2(m, aux, x, y+2, amGasit);
+
+    }
+    if(m[x-1][y]=='1'&& aux[x-2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareSusP2(m, aux, x-2, y, amGasit);
+
+    }
+
+}
+void verificareJosP2(char m[L][C], char aux[L][C], int x, int y, bool & amGasit)
+{
+    if(x==17)
+    {
+        amGasit=true;
+        return;
+    }
+    aux[x][y]='v';
+    if(m[x+1][y]=='1' && aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareJosP2(m, aux, x+2, y, amGasit);
+
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareStangaP2(m, aux, x, y-2, amGasit);
+
+    }
+    if(m[x][y+1]=='1'&& aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+            return;
+        }
+        verificareDreaptaP2(m, aux, x, y+2, amGasit);
+
+    }
+
+}
+int Can2Escape(char m[L][C])
+{
+    int a,b,c,d;
+    FindPlayer1(m,a,b);
+    FindPlayer2(m,c,d);
+    int x, y;
+    char aux[L][C];
+    creareTabla(aux);
+    aux[c][d]='v';
+    aux[a][b]='0';
+    bool amGasit=false;
+    FindPlayer2(m,x,y);
+
+    if(m[x+1][y]=='1' &&  aux[x+2][y]!='v')
+    {
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareJosP2(m, aux, x+2, y, amGasit);
+
+    }
+    if(m[x][y+1]=='1' && aux[x][y+2]!='v')
+    {
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareDreaptaP2(m, aux, x, y+2, amGasit);
+
+
+    }
+    if(m[x][y-1]=='1' && aux[x][y-2]!='v')
+    {
+
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareStangaP2(m, aux, x, y-2, amGasit);
+    }
+    if(m[x-1][y]=='1' && aux[x-2][y]!='v')
+    {
+
+        if(amGasit==true)
+        {
+
+            return 1;
+        }
+        verificareSusP2(m, aux, x-2, y, amGasit);
+    }
+    if(amGasit==true)
+    {
+
+        return 1;
+
+    }
+    else
+    {
+
+        return 0;
+    }
+
+}
+
+
+void afisareTablaJoc(char m[L][C])
+{
+
+    int a,b,c,d;
+    FindPlayer1(m,a,b);
+    FindPlayer2(m,c,d);
+    system("cls");
+    for(int i=1; i<=17; i++)
+    {
+        for(int j=1; j<=17; j++)
+        {
+            cout<<m[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"Pozitie Player 1 (#) : "<<a<<" "<<b<<endl;
+    cout<<"Pozitie Player 2 (*) : "<<c<<" "<<d<<endl;
+    cout<<nrZiduri1<<" "<<nrZiduri2;
+}
+
+
+void desenareTablaDeJoc(char m[L][C])
+{
+    setfillstyle(SOLID_FILL, RGB(125, 120, 128));
+    bar(380+20,20+20,1140-20,780-20);
+
+
+    desenareMatrice(m);
+    desenareButoaneOV(200);
+    setvisualpage(0);
+}
+
+void desenareMatrice(char m[L][C])
+{
+    float startX;
+    float startY;
+    startX=410;
+    startY=50;
+    int i,j;
+    for(i=1; i<=9; i++)
+    {
+        for(j=1; j<=9; j++)
+        {
+            ///Patrate
+            if(i==1)
+                setfillstyle(SOLID_FILL, RGB(61, 188, 224));
+            else if (i==9) setfillstyle(SOLID_FILL, RGB(211, 152, 237));
+            else setfillstyle(SOLID_FILL, RGB(64,64,64));
+            bar(startX,startY,startX+60,startY+60);
+            //Detaliu
+            if(i==1)
+                setfillstyle(SOLID_FILL, RGB(108, 147, 158));
+            else if (i==9) setfillstyle(SOLID_FILL, RGB(50, 2, 71));
+            else setfillstyle(SOLID_FILL, RGB(69,69,69));
+            bar(startX+10,startY+10,startX+60-10,startY+60-10);
+            startX+=80;
+
+            ///Jucatori
+            if(m[i*2-1][j*2-1]=='*')
+            {
+                setfillstyle(SOLID_FILL, RGB(106, 229, 247));
+                setcolor(RGB(106, 229, 247));
+                int xPtDesen = ((j*2-1)/2)*80+440;
+                int yPtDesen = ((i*2-1)/2)*80+80;
+                fillellipse(xPtDesen, yPtDesen, 25,25);
+                setfillstyle(SOLID_FILL, RGB(78, 179, 194));
+                fillellipse(xPtDesen, yPtDesen, 15,15);
+            }
+            if(m[i*2-1][j*2-1]=='#')
+            {
+                setfillstyle(SOLID_FILL, RGB(150, 71, 161));
+                setcolor(RGB(150, 71, 161));
+                int xPtDesen = ((j*2-1)/2)*80+440;
+                int yPtDesen = ((i*2-1)/2)*80+80;
+                fillellipse(xPtDesen, yPtDesen, 25,25);
+                setfillstyle(SOLID_FILL, RGB(99, 20, 110));
+                fillellipse(xPtDesen, yPtDesen, 15,15);
+            }
+
+            if(i!=9 && j!=9)
+            {
+                setfillstyle(SOLID_FILL, RGB(32,32,32));
+                setcolor(RGB(70,70,70));
+                int xPtDesen = j*80+400;
+                int yPtDesen = i*80+40;
+                fillellipse(xPtDesen, yPtDesen, 10,10);
+            }
+
+
+
+            if(m[i*2][j*2]=='>')
+            {
+                int plasareX=110+80*(((i*2+2)/2)-2);
+                int plasareY=410+80*(((j*2+2)/2)-2);
+                setfillstyle(SOLID_FILL, MAGENTA);
+                bar(plasareY, plasareX, plasareY+140, plasareX+20);
+            }
+            if(m[i*2][j*2]=='^')
+            {
+                int plasareX=50+80*(((i*2+2)/2)-2);
+                int plasareY=470+80*(((j*2+2)/2)-2);
+                setfillstyle(SOLID_FILL, CYAN);
+                bar(plasareY, plasareX, plasareY+20, plasareX+140);
+            }
+
+
+
+        }
+
+        startY+=80;
+        startX=410;
+    }
+}
+
+void ToString(int x, char s[3])
+{
+    if(x<10)
+    {
+        x=x+48;
+        s[0]=x;
+        s[1]='\0';
+    }
+    else
+    {
+        s[0]=x/10+48;
+        s[1]=x%10+48;
+        s[2]='\0';
+    }
+}
+void desenareButoaneOV(int on)
+{
+    //vertical
+    if(paritateMiscare%2==0)
+        setfillstyle(SOLID_FILL, RGB(75, 241, 250));
+    else setfillstyle(SOLID_FILL, RGB(252, 126, 234));
+    bar(ox, oy, ox+marimeButon, oy+marimeButon);
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(ox+marimeButon/10*4, oy, ox+marimeButon/10*6, oy+marimeButon);
+
+    //Numar Ziduri
+    if(paritateMiscare%2==0)
+    {
+        setbkcolor(RGB(32,32,32));
+        setfillstyle(SOLID_FILL,RGB(32,32,32));
+        setcolor(RGB(150, 239, 255));
+    }
+
+    else
+    {
+        setbkcolor(RGB(32,32,32));
+        setcolor(RGB(239, 150, 255));
+        setfillstyle(SOLID_FILL, RGB(32,32,32));
+    }
+    bar(ox, oy+100, ox+marimeButon, oy+marimeButon+101);
+    setcolor(WHITE);
+    settextjustify(CENTER_TEXT,CENTER_TEXT);
+    settextstyle(BOLD_FONT,0,9);
+
+    char nr1[3], nr2[3];
+    ToString(nrZiduri1, nr1);
+    ToString(nrZiduri2, nr2);
+    if(paritateMiscare%2==0)
+        outtextxy(vx+50,vy-22,nr1);
+    else outtextxy(vx+50,vy-22,nr2);
+
+    //orizontal
+    if(paritateMiscare%2==0)
+        setfillstyle(SOLID_FILL, RGB(75, 241, 250));
+    else setfillstyle(SOLID_FILL, RGB(252, 126, 234));
+    bar(vx, vy+padding, vx+marimeButon, vy+marimeButon+padding);
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(vx, vy+padding+marimeButon/10*4, vx+marimeButon, vy+padding+marimeButon/10*6);
+}
+void convertireCoordonate(int &x, int &y)
+{
+    if(x>=410 && x<=470)
+        x=1;
+    if(x>=410+80*1 && x<=470+80*1)
+        x=3;
+    if(x>=410+80*2 && x<=470+80*2)
+        x=5;
+    if(x>=410+80*3 && x<=470+80*3)
+        x=7;
+    if(x>=410+80*4 && x<=470+80*4)
+        x=9;
+    if(x>=410+80*5 && x<=470+80*5)
+        x=11;
+    if(x>=410+80*6 && x<=470+80*6)
+        x=13;
+    if(x>=410+80*7 && x<=470+80*7)
+        x=15;
+    if(x>=410+80*8 && x<=470+80*8)
+        x=17;
+
+
+    if(y>=50 && y<=110)
+        y=1;
+    if(y>=50+80*1 && y<=110+80*1)
+        y=3;
+    if(y>=50+80*2 && y<=110+80*2)
+        y=5;
+    if(y>=50+80*3 && y<=110+80*3)
+        y=7;
+    if(y>=50+80*4 && y<=110+80*4)
+        y=9;
+    if(y>=50+80*5 && y<=110+80*5)
+        y=11;
+    if(y>=50+80*6 && y<=110+80*6)
+        y=13;
+    if(y>=50+80*7 && y<=110+80*7)
+        y=15;
+    if(y>=50+80*8 && y<=110+80*8)
+        y=17;
+
+    if(x>470 + 80*0 && x<490 + 80*0)
+        x=2;
+    if(x>470 + 80*1 && x<490 + 80*1)
+        x=4;
+    if(x>470 + 80*2 && x<490 + 80*2)
+        x=6;
+    if(x>470 + 80*3 && x<490 + 80*3)
+        x=8;
+    if(x>470 + 80*4 && x<490 + 80*4)
+        x=10;
+    if(x>470 + 80*5 && x<490 + 80*5)
+        x=12;
+    if(x>470 + 80*6 && x<490 + 80*6)
+        x=14;
+    if(x>470 + 80*7 && x<490 + 80*7)
+        x=16;
+
+
+    if(y>110 + 80*0 && y<130 + 80*0)
+        y=2;
+    if(y>110 + 80*1 && y<130 + 80*1)
+        y=4;
+    if(y>110 + 80*2 && y<130 + 80*2)
+        y=6;
+    if(y>110 + 80*3 && y<130 + 80*3)
+        y=8;
+    if(y>110 + 80*4 && y<130 + 80*4)
+        y=10;
+    if(y>110 + 80*5 && y<130 + 80*5)
+        y=12;
+    if(y>110 + 80*6 && y<130 + 80*6)
+        y=14;
+    if(y>110 + 80*7 && y<130 + 80*7)
+        y=16;
+}
+
+void WaitForClick(int &x, int &y)
+{
+
+
+    int clicked=0;
+    while(clicked==0)
+    {
+        if(ismouseclick(WM_LBUTTONDOWN))
+        {
+
+            x=mousex();
+            y=mousey();
+            if(x>=410 && y>=50 && x<=410+720 && y<=50+720 &&finish==0)
+            {
+                aFostConvertit=true;
+                convertireCoordonate(x,y);
+            }
+            else aFostConvertit=false;
+            clicked=1;
+            clearmouseclick(WM_LBUTTONDOWN);
+        }
+
+    }
+
+}
+
+void WaitForOrientare(char orientare[10])
+{
+    int x,y,clicked=0;
+    while(clicked==0)
+    {
+        if(ismouseclick(WM_LBUTTONDOWN))
+        {
+
+            x=mousex();
+            y=mousey();
+            if(x>=ox && x<=ox+marimeButon && y>=oy && y<=oy+marimeButon)
+            {
+                strcpy(orientare, "vertical");
+                clicked=1;
+            }
+            else if(x>=vx && x<=vx+marimeButon && y>=vy+10 && y<=vy+marimeButon+10)
+            {
+                strcpy(orientare, "orizontal");
+                clicked=1;
+            }
+            else
+            {
+                strcpy(orientare, "razgandit");
+                clicked=1;
+            }
+
+            clearmouseclick(WM_LBUTTONDOWN);
+        }
+    }
+}
+void desenareMutariValide(char p, int x, int y)
+{
+    int i,j;
+    char copie[L][C];
+    copiereMatrice(m, copie);
+
+    if(p=='*')
+    {
+        for(i=1; i<=17; i++)
+        {
+            for(j=1; j<=17; j++)
+            {
+                if(miscareValidaPionPtDesenare(copie,i,j,x,y))
+                {
+                    setfillstyle(SOLID_FILL, RGB(150, 239, 255));
+                    setcolor(RGB(230,200,200));
+                    int xPtDesen = (j/2)*80+440;
+                    int yPtDesen = (i/2)*80+80;
+                    fillellipse(xPtDesen, yPtDesen, 15,15);
+                }
+
+            }
+        }
+    }
+    else if(p=='#')
+    {
+        for(i=1; i<=17; i++)
+        {
+            for(j=1; j<=17; j++)
+            {
+                if(miscareValidaPionPtDesenare(copie,i,j,x,y))
+                {
+                    setfillstyle(SOLID_FILL, RGB(191, 120, 245));
+                    setcolor(RGB(200,200,230));
+                    int xPtDesen = (j/2)*80+440;
+                    int yPtDesen = (i/2)*80+80;
+                    fillellipse(xPtDesen, yPtDesen, 15,15);
+                }
+            }
+        }
+    }
+}
+void afisareMatriceDirectii(char m[L][C])
+{
+    system("cls");
+    for(int i=1; i<=17; i++)
+    {
+        for(int j=1; j<=17; j++)
+            cout<<m[i][j]<<" ";
+
+        cout<<endl;
+    }
+}
+void imagine()
+{
+    initwindow(1520,800,"Welcome Page");
+    setbkcolor(WHITE);
+    cleardevice();
+    readimagefile("imagine_joc_2.jpg",0,0,1520,800);
+    getch();
+    closegraph();
+}
+int main()
+
+{   imagine();
+    initwindow(width, height, "Quoridor");
+
+    srand(time(0));
+    paritateMiscare=rand()%2;
+    creareTabla(m);
+    while(finish==0)
+    {
+
+        int x,y;
+        desenareTablaDeJoc(m);
+        setfillstyle(SOLID_FILL, WHITE);
+        WaitForClick(y,x);
+        if(aFostConvertit==true)
+            selectarePatrat(m, x, y);
+
+        Finish(finish,m);
+
+    }
+
+
+
+    getch();
+    closegraph();
+    return 0;
+
+}
