@@ -1,4 +1,4 @@
-    #include <iostream>
+#include <iostream>
 #include <winbgim.h>
 #include <graphics.h>
 #include <cmath>
@@ -31,6 +31,8 @@ int finish = 0;
 int nrZiduri1 =10;
 int nrZiduri2 = 10;
 bool aFostConvertit;
+void meniu();
+void reguli();
 void creareTabla(char[L][C]);
 void afisareMatriceDirectii(char[L][C]);
 void desenareMutariValide(char, int, int);
@@ -1218,14 +1220,14 @@ void desenareMatrice(char m[L][C])
             {
                 int plasareX=110+80*(((i*2+2)/2)-2);
                 int plasareY=410+80*(((j*2+2)/2)-2);
-                setfillstyle(SOLID_FILL, MAGENTA);
+                setfillstyle(SOLID_FILL, LIGHTGRAY);
                 bar(plasareY, plasareX, plasareY+140, plasareX+20);
             }
             if(m[i*2][j*2]=='^')
             {
                 int plasareX=50+80*(((i*2+2)/2)-2);
                 int plasareY=470+80*(((j*2+2)/2)-2);
-                setfillstyle(SOLID_FILL, CYAN);
+                setfillstyle(SOLID_FILL, LIGHTGRAY);
                 bar(plasareY, plasareX, plasareY+20, plasareX+140);
             }
 
@@ -1488,13 +1490,88 @@ void imagine()
     initwindow(1520,800,"Welcome Page");
     setbkcolor(WHITE);
     cleardevice();
-    readimagefile("imagine_joc_2.jpg",0,0,1520,800);
+    readimagefile("menu_joc.jpg",0,0,1520,800);
     getch();
     closegraph();
 }
+void reguli()
+{
+    initwindow(1520,800,"reguli");
+    setbkcolor(WHITE);
+    cleardevice();
+    readimagefile("reguli.jpg",0,0,1520,800);
+    int x9=400,y9=100;
+    int x12=0,y12=0;
+    int xmouse,ymouse;
+    int clicked=0;
+    while(clicked==0)
+    {
+        if(ismouseclick(WM_LBUTTONDOWN))
+        {
+            xmouse=mousex();
+            ymouse=mousey();
+            if(xmouse>=x12 && xmouse<=x9 && ymouse>=y12 && ymouse<=y9)
+            {
+                closegraph();
+                meniu();
+                clicked=1;
+            }
+            clearmouseclick(WM_LBUTTONDOWN);
+            closegraph();
+        }
+    }
+}
+
+void meniu(){
+    initwindow(1520,800,"");
+    setbkcolor(WHITE);
+    cleardevice();
+    readimagefile("meniu_joc.jpg",0,0,1520,800);
+    int x=600,y=400;
+    int x1=850,y1=500;
+    int x2=630,y2=500;
+    int x3=900, y3=600;
+    int x4=630,y4=600;
+    int x5=820,y5=700;
+
+    int xmouse,ymouse;
+    int clicked=0;
+    while(clicked==0)
+    {
+        if(ismouseclick(WM_LBUTTONDOWN))
+        {
+            xmouse=mousex();
+            ymouse=mousey();
+            if(xmouse>=x && xmouse<=x1 && ymouse>=y && ymouse<=y1)
+            {
+                clicked=1;
+
+            }
+            else if(xmouse>=x2 && xmouse<=x3 && ymouse>=y2 && ymouse<=y3)
+            {   closegraph();
+                reguli();
+                clicked=2;
+
+            }
+            else if(xmouse>=x4 && xmouse<=x5 && ymouse>=y4 && ymouse<=y5)
+            {
+                exit(0);
+                clicked=3;
+
+            }
+
+            clearmouseclick(WM_LBUTTONDOWN);
+            closegraph();
+        }
+    }
+
+
+}
 int main()
 
-{   imagine();
+{
+    imagine();
+    meniu();
     initwindow(width, height, "Quoridor");
 
     srand(time(0));
