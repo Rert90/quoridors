@@ -3,7 +3,7 @@
 #include <graphics.h>
 #include <cmath>
 #include <stdio.h>
-#include <windows.h>
+#include <Windows.h>
 #include <fstream>
 #include <conio.h>
 #include <cstring>
@@ -37,7 +37,6 @@ void creareTabla(char[L][C]);
 void afisareMatriceDirectii(char[L][C]);
 void desenareMutariValide(char, int, int);
 void WaitForOrientare(char[10]);
-void ResetAtPlayAgain(char[L][C]);
 void desenareButoaneOV(int);
 void desenareMatrice(char[L][C]);
 void desenareTablaDeJoc(char[L][C]);
@@ -52,6 +51,7 @@ void verificareDreaptaP2(char[L][C], char[L][C], int,int,bool&);
 void afisareTablaJoc(char[L][C]);
 void WaitForClick(int&, int&);
 void ToString(int, char[3]);
+void desenareButonInapoi();
 int Can1Escape(char[L][C]);
 int Can2Escape(char[L][C]);
 char selectarePatrat(char[L][C],int, int);
@@ -1146,7 +1146,27 @@ void afisareTablaJoc(char m[L][C])
     cout<<nrZiduri1<<" "<<nrZiduri2;
 }
 
+void desenareButonInapoi(){
 
+rectangle(0,0,65,65);
+    int xmouse,ymouse;
+    int xpozinit=0, ypozinit=0;
+    int xpozfin=65, ypozfin=65;
+    int clicked=0;
+        if(ismouseclick(WM_LBUTTONDOWN)&&clicked==0)
+        {
+            xmouse=mousex();
+            ymouse=mousey();
+            if(xmouse>=xpozinit && xmouse<=xpozfin && ymouse>=ypozinit && ymouse<=ypozfin)
+            {
+                closegraph();
+                meniu();
+                clicked=1;
+            }
+            clearmouseclick(WM_LBUTTONDOWN);
+
+        }
+    }
 void desenareTablaDeJoc(char m[L][C])
 {
     setfillstyle(SOLID_FILL, RGB(125, 120, 128));
@@ -1156,6 +1176,7 @@ void desenareTablaDeJoc(char m[L][C])
     desenareMatrice(m);
     desenareButoaneOV(200);
     setvisualpage(0);
+
 }
 
 void desenareMatrice(char m[L][C])
@@ -1165,6 +1186,7 @@ void desenareMatrice(char m[L][C])
     startX=410;
     startY=50;
     int i,j;
+
     for(i=1; i<=9; i++)
     {
         for(j=1; j<=9; j++)
@@ -1175,7 +1197,7 @@ void desenareMatrice(char m[L][C])
             else if (i==9) setfillstyle(SOLID_FILL, RGB(211, 152, 237));
             else setfillstyle(SOLID_FILL, RGB(64,64,64));
             bar(startX,startY,startX+60,startY+60);
-            //Detaliu
+
             if(i==1)
                 setfillstyle(SOLID_FILL, RGB(108, 147, 158));
             else if (i==9) setfillstyle(SOLID_FILL, RGB(50, 2, 71));
@@ -1238,6 +1260,8 @@ void desenareMatrice(char m[L][C])
         startY+=80;
         startX=410;
     }
+
+
 }
 
 void ToString(int x, char s[3])
@@ -1257,6 +1281,7 @@ void ToString(int x, char s[3])
 }
 void desenareButoaneOV(int on)
 {
+
     //vertical
     if(paritateMiscare%2==0)
         setfillstyle(SOLID_FILL, RGB(75, 241, 250));
@@ -1298,6 +1323,7 @@ void desenareButoaneOV(int on)
     bar(vx, vy+padding, vx+marimeButon, vy+marimeButon+padding);
     setfillstyle(SOLID_FILL, WHITE);
     bar(vx, vy+padding+marimeButon/10*4, vx+marimeButon, vy+padding+marimeButon/10*6);
+
 }
 void convertireCoordonate(int &x, int &y)
 {
@@ -1494,33 +1520,33 @@ void imagine()
     getch();
     closegraph();
 }
-void reguli()
-{
-    initwindow(1520,800,"reguli");
-    setbkcolor(WHITE);
-    cleardevice();
-    readimagefile("reguli.jpg",0,0,1520,800);
-    int x9=400,y9=100;
-    int x12=0,y12=0;
-    int xmouse,ymouse;
-    int clicked=0;
-    while(clicked==0)
+    void reguli()
     {
-        if(ismouseclick(WM_LBUTTONDOWN))
+        initwindow(1520,800,"reguli");
+        setbkcolor(WHITE);
+        cleardevice();
+        readimagefile("reguli.jpg",0,0,1520,800);
+        int x9=400,y9=100;
+        int x12=0,y12=0;
+        int xmouse,ymouse;
+        int clicked=0;
+        while(clicked==0)
         {
-            xmouse=mousex();
-            ymouse=mousey();
-            if(xmouse>=x12 && xmouse<=x9 && ymouse>=y12 && ymouse<=y9)
+            if(ismouseclick(WM_LBUTTONDOWN))
             {
+                xmouse=mousex();
+                ymouse=mousey();
+                if(xmouse>=x12 && xmouse<=x9 && ymouse>=y12 && ymouse<=y9)
+                {
+                    closegraph();
+                    meniu();
+                    clicked=1;
+                }
+                clearmouseclick(WM_LBUTTONDOWN);
                 closegraph();
-                meniu();
-                clicked=1;
             }
-            clearmouseclick(WM_LBUTTONDOWN);
-            closegraph();
         }
     }
-}
 
 void meniu(){
     initwindow(1520,800,"");
@@ -1543,7 +1569,27 @@ void meniu(){
             xmouse=mousex();
             ymouse=mousey();
             if(xmouse>=x && xmouse<=x1 && ymouse>=y && ymouse<=y1)
-            {
+            {   closegraph();
+                initwindow(width, height, "Quoridor");
+    srand(time(0));
+    paritateMiscare=rand()%2;
+    creareTabla(m);
+    while(finish==0)
+    {
+
+        int x,y;
+        desenareTablaDeJoc(m);
+
+        setfillstyle(SOLID_FILL, WHITE);
+        WaitForClick(y,x);
+        if(aFostConvertit==true)
+            selectarePatrat(m, x, y);
+
+        Finish(finish,m);
+
+    }
+    getch();
+   closegraph();
                 clicked=1;
 
             }
@@ -1569,32 +1615,11 @@ void meniu(){
 }
 int main()
 
-{
+{PlaySoundW(L"schnelle-synth-melodie-132-bpm-8971.wav", NULL, SND_FILENAME | SND_ASYNC);
+
     imagine();
+
     meniu();
-    initwindow(width, height, "Quoridor");
-
-    srand(time(0));
-    paritateMiscare=rand()%2;
-    creareTabla(m);
-    while(finish==0)
-    {
-
-        int x,y;
-        desenareTablaDeJoc(m);
-        setfillstyle(SOLID_FILL, WHITE);
-        WaitForClick(y,x);
-        if(aFostConvertit==true)
-            selectarePatrat(m, x, y);
-
-        Finish(finish,m);
-
-    }
-
-
-
-    getch();
-    closegraph();
     return 0;
 
 }
